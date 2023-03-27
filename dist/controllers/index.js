@@ -36,19 +36,24 @@ router.get("/city", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!!cacheResults) {
         fromCache = true;
         results = JSON.parse(cacheResults);
-        return res.status(200).json({ message: "success", fromCache, data: results });
+        return res
+            .status(200)
+            .json({ message: "success", fromCache, data: results });
     }
-    const citiData = (0, getCityData_1.getCityData)(cityName);
-    if (!((citiData === null || citiData === void 0 ? void 0 : citiData.lat) && (citiData === null || citiData === void 0 ? void 0 : citiData.lng))) {
-        return res.status(404).json({ message: "city not found" });
+    let citiData;
+    try {
+        citiData = (yield (0, getCityData_1.getCityData)(cityName));
+    }
+    catch (error) {
+        return res.status(404).json({ message: "Unknown City" });
     }
     const data = { latitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lat), longitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lng) };
     results = yield (0, fetchWeatherData_1.default)(data);
     yield redisClient_1.default.set(cityName, JSON.stringify(results));
-    yield redisClient_1.default.expire(cityName, 24 * 60 * 60);
+    yield redisClient_1.default.expire(cityName, 12 * 60 * 60);
     return res.status(200).json({ message: "success", fromCache, data: results });
 }));
-router.get('/find-city', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/find-city", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cityName = req.query.name.toLowerCase();
     try {
         const result = yield (0, searchCity_1.default)(cityName);

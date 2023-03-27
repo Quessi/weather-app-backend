@@ -2,10 +2,19 @@ import cityArray from 'cities.json'
 import { ICityData } from '../types';
 
 export const getCityData = (name:string) =>{
-    // let lowercaseStr = name.trim().toLowerCase().replace(/^(.)/, (match:string) => match.toUpperCase());
-
     const cityData:ICityData[] = cityArray as unknown as Array<ICityData>;
-    return cityData.find(city => city.name.toLowerCase() === name.toLowerCase());
+    const result = cityData.find(city => city.name.trim().toLowerCase() === name.trim().toLowerCase()) ;
+
+
+    return new Promise((resolve, reject) =>{
+        if(result){
+            resolve(result )
+        }else{
+            reject(new Error('City not found'))
+        }
+
+
+    })
 
 }
 

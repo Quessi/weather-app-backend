@@ -6,9 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCityNameFromCoordinates = exports.getCityData = void 0;
 const cities_json_1 = __importDefault(require("cities.json"));
 const getCityData = (name) => {
-    // let lowercaseStr = name.trim().toLowerCase().replace(/^(.)/, (match:string) => match.toUpperCase());
     const cityData = cities_json_1.default;
-    return cityData.find(city => city.name.toLowerCase() === name.toLowerCase());
+    const result = cityData.find(city => city.name.trim().toLowerCase() === name.trim().toLowerCase());
+    return new Promise((resolve, reject) => {
+        if (result) {
+            resolve(result);
+        }
+        else {
+            reject(new Error('City not found'));
+        }
+    });
 };
 exports.getCityData = getCityData;
 const getCityNameFromCoordinates = ({ lat, lng }) => {
