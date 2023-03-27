@@ -18,6 +18,11 @@ const controllers_1 = __importDefault(require("./controllers"));
 const redisClient_1 = __importDefault(require("./utils/redisClient"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 4000;
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield redisClient_1.default.connect();
     console.log("Redis connected successfully");
