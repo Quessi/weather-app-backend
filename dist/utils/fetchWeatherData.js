@@ -16,9 +16,7 @@ const API_1 = __importDefault(require("./API"));
 const api_key = process.env.WEATHER_API_KEY;
 const fetchData = (endpoint) => __awaiter(void 0, void 0, void 0, function* () {
     const { latitude, longitude } = endpoint || {};
-    const response = yield API_1.default.get(`data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=acb89f62d3a00c0e0a641ca9c30a4c7a`);
-    console.log(response.data);
+    const response = yield API_1.default.get(`data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=${api_key}`);
     return response.data;
 });
 exports.default = fetchData;
-// api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=acb89f62d3a00c0e0a641ca9c30a4c7a

@@ -14,48 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
-const fetchWeatherData_1 = __importDefault(require("./utils/fetchWeatherData"));
-const getCityData_1 = require("./utils/getCityData");
-const redis_1 = __importDefault(require("redis"));
+const controllers_1 = __importDefault(require("./controllers"));
+const redisClient_1 = __importDefault(require("./utils/redisClient"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 4000;
-let redisClient;
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    redisClient = redis_1.default.createClient();
-    redisClient.on("error", (error) => console.error(`Error : ${error}`));
-    yield redisClient.connect();
+    yield redisClient_1.default.connect();
+    console.log("Redis connected successfully");
 }))();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-app.get("/coordinates", (req, res) => {
-    const latitude = req.query.lat;
-    const longitude = req.query.lon;
-    const data = { latitude, longitude };
-    if (!(data.latitude && data.longitude)) {
-        return res.send(400).json({ message: "Invalid Request Location" });
-    }
-    const result = (0, fetchWeatherData_1.default)(data);
-    res.status(200).json({ message: "success", data: result });
-});
-app.get("/city", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let fromCache = false;
-    let results;
-    const cityName = req.query.name.toLowerCase();
-    const cacheResults = yield redisClient.get(cityName);
-    if (!!cacheResults) {
-        fromCache = true;
-        results = JSON.parse(cacheResults);
-        return res.status(200).json({ message: "success", data: results, fromCache });
-    }
-    const citiData = (0, getCityData_1.getCityData)(cityName);
-    if (!((citiData === null || citiData === void 0 ? void 0 : citiData.lat) && (citiData === null || citiData === void 0 ? void 0 : citiData.lng))) {
-        return res.status(404).json({ message: "city not found" });
-    }
-    const data = { latitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lat), longitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lng) };
-    results = yield (0, fetchWeatherData_1.default)(data);
-    yield redisClient.set(cityName, JSON.stringify(results));
-    return res.status(200).json({ message: "success", data: results, fromCache });
-}));
+app.use(controllers_1.default);
 app.listen(PORT, () => {
     console.log("server is running", PORT);
 });
