@@ -7,14 +7,14 @@ import { ICityData } from "../types";
 
 const router = express.Router();
 
-router.get("/coordinates", (req, res) => {
+router.get("/coordinates", async(req, res) => {
   const latitude = req.query.lat as unknown as number;
   const longitude = req.query.lon as unknown as number;
   const data = { latitude, longitude };
   if (!(data.latitude && data.longitude)) {
-    return res.send(400).json({ message: "Invalid Request Location" });
+    return res.status(400).json({ message: "Invalid Request Location" });
   }
-  const result = fetchData(data);
+  const result = await fetchData(data);
   res.status(200).json({ message: "success", data: result });
 });
 
@@ -22,7 +22,13 @@ router.get("/city", async (req, res) => {
   let fromCache = false;
   let results;
   const cityName = (req.query.name as string).toLowerCase();
-  const cacheResults = await redisClient.get(cityName);
+  let cacheResults
+  try {
+    cacheResults = await redisClient.get(cityName);
+
+  } catch (error) {
+    console.log(error)
+  }
   if (!!cacheResults) {
     fromCache = true;
     results = JSON.parse(cacheResults);
@@ -38,8 +44,12 @@ router.get("/city", async (req, res) => {
   }
   const data = { latitude: +citiData?.lat, longitude: +citiData?.lng };
   results = await fetchData(data);
-  await redisClient.set(cityName, JSON.stringify(results));
-  await redisClient.expire(cityName, 12 * 60 * 60);
+  try {
+    await redisClient.set(cityName, JSON.stringify(results));
+    await redisClient.expire(cityName, 12 * 60 * 60);
+  } catch (error) {
+    console.log(error)
+  }
   return res.status(200).json({ message: "success", fromCache, data: results });
 });
 

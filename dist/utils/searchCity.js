@@ -9,7 +9,7 @@ const searchCity = function (searchTerm) {
     return new Promise((resolve, reject) => {
         const filteredCityData = cityData.filter((city) => city.name.slice(0, searchTerm === null || searchTerm === void 0 ? void 0 : searchTerm.length).toLowerCase().includes(searchTerm.toLowerCase()));
         if (filteredCityData.length > 0) {
-            resolve(filteredCityData.sort((a, b) => a.name.localeCompare(b.name)));
+            resolve(filteredCityData.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 10));
         }
         else {
             reject(new Error("No results found"));

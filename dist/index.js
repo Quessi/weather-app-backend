@@ -24,8 +24,13 @@ app.use((req, res, next) => {
     next();
 });
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    yield redisClient_1.default.connect();
-    console.log("Redis connected successfully");
+    try {
+        yield redisClient_1.default.connect();
+        console.log("Redis connected successfully");
+    }
+    catch (error) {
+        console.log("Redis connection failed");
+    }
 }))();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));

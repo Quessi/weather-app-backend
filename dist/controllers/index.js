@@ -18,21 +18,27 @@ const getCityData_1 = require("../utils/getCityData");
 const redisClient_1 = __importDefault(require("../utils/redisClient"));
 const searchCity_1 = __importDefault(require("../utils/searchCity"));
 const router = express_1.default.Router();
-router.get("/coordinates", (req, res) => {
+router.get("/coordinates", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const latitude = req.query.lat;
     const longitude = req.query.lon;
     const data = { latitude, longitude };
     if (!(data.latitude && data.longitude)) {
-        return res.send(400).json({ message: "Invalid Request Location" });
+        return res.status(400).json({ message: "Invalid Request Location" });
     }
-    const result = (0, fetchWeatherData_1.default)(data);
+    const result = yield (0, fetchWeatherData_1.default)(data);
     res.status(200).json({ message: "success", data: result });
-});
+}));
 router.get("/city", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let fromCache = false;
     let results;
     const cityName = req.query.name.toLowerCase();
-    const cacheResults = yield redisClient_1.default.get(cityName);
+    let cacheResults;
+    try {
+        cacheResults = yield redisClient_1.default.get(cityName);
+    }
+    catch (error) {
+        console.log(error);
+    }
     if (!!cacheResults) {
         fromCache = true;
         results = JSON.parse(cacheResults);
@@ -49,8 +55,13 @@ router.get("/city", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     const data = { latitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lat), longitude: +(citiData === null || citiData === void 0 ? void 0 : citiData.lng) };
     results = yield (0, fetchWeatherData_1.default)(data);
-    yield redisClient_1.default.set(cityName, JSON.stringify(results));
-    yield redisClient_1.default.expire(cityName, 12 * 60 * 60);
+    try {
+        yield redisClient_1.default.set(cityName, JSON.stringify(results));
+        yield redisClient_1.default.expire(cityName, 12 * 60 * 60);
+    }
+    catch (error) {
+        console.log(error);
+    }
     return res.status(200).json({ message: "success", fromCache, data: results });
 }));
 router.get("/find-city", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

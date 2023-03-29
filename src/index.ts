@@ -13,8 +13,12 @@ app.use((req, res, next) => {
 
 
 (async () => {
+  try {
     await redisClient.connect();
     console.log("Redis connected successfully")
+  } catch (error) {
+    console.log("Redis connection failed")
+  }
 })();
 
 app.use(express.json());
