@@ -1,5 +1,4 @@
 import { createClient } from 'redis';
-import type { RedisClientType } from 'redis'
 
 const redisPort  = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 13125 
 const client = createClient({

@@ -4,6 +4,7 @@ import { getCityData } from "../utils/getCityData";
 import redisClient from "../utils/redisClient";
 import searchCity from "../utils/searchCity";
 import { ICityData } from "../types";
+import redisService from "../services/redisService";
 
 const router = express.Router();
 
