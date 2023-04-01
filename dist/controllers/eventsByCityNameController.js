@@ -40,8 +40,10 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const params = (0, filterNull_1.default)({
             country,
             within,
-            category
+            category,
+            offset: 100
         });
+        console.log(params);
         const response = yield (0, eventsAPI_1.default)(params);
         return res.status(200).json({ message: "success", data: response });
     }

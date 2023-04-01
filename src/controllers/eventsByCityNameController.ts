@@ -31,8 +31,10 @@ export default async (req: Request, res: Response) => {
     const params: IParams = filterNull( {
       country,
       within,
-      category
+      category,
+      offset:100
     });
+    console.log(params)
     const response = await eventsAPI(params);
     return res.status(200).json({ message: "success", data: response });
   } catch (error) {
