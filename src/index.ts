@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import controllers from "./controllers"
+import indexRouter from "./Routes";
 import redisClient from "./utils/redisClient";
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(controllers)
+app.use(indexRouter)
 
 
 app.listen(PORT, () => {
