@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const API_1 = __importDefault(require("./API"));
+const API_1 = __importDefault(require("../../../utils/API"));
 const api_key = process.env.WEATHER_API_KEY;
 const fetchData = (endpoint) => __awaiter(void 0, void 0, void 0, function* () {
     const { latitude, longitude } = endpoint || {};

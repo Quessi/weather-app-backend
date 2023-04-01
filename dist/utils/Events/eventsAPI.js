@@ -12,29 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("dotenv/config");
-const express_1 = __importDefault(require("express"));
-const Routes_1 = __importDefault(require("./Routes"));
-const redisClient_1 = __importDefault(require("./utils/redisClient"));
-const app = (0, express_1.default)();
-const PORT = process.env.PORT || 4000;
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
-(() => __awaiter(void 0, void 0, void 0, function* () {
+const API_1 = __importDefault(require("../API"));
+require("./CountryCodes.json");
+const headers = {
+    Authorization: `Bearer ${process.env.EVENTS_API_KEY}`,
+    Accept: "application/json",
+};
+exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield redisClient_1.default.connect();
-        console.log("Redis connected successfully");
+        const response = yield (0, API_1.default)("events", headers).get("/", { params });
+        return response === null || response === void 0 ? void 0 : response.data;
     }
     catch (error) {
-        console.log("Redis connection failed");
     }
-}))();
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: true }));
-app.use(Routes_1.default);
-app.listen(PORT, () => {
-    console.log("server is running", PORT);
 });
